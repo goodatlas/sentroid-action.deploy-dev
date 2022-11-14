@@ -1,0 +1,54 @@
+name: "Deploy to dev"
+description: "Docker 이미지를 만들어 ECR에 Push 하고 dev용 EC2에 배포한다."
+
+inputs:
+  repository:
+    description: "Name of ECR Repository"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Set environment variables (with tag)
+      if: ${{ startsWith(env.GITHUB_REF, 'refs/tags/') }}
+      run: echo "RELEASE_TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Set environment variables (without tag)
+      if: ${{ !startsWith(env.GITHUB_REF, 'refs/tags/') }}
+      run: echo "RELEASE_TAG=dev" >> $GITHUB_ENV
+      shell: bash
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-northeast-2
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build and push
+      uses: docker/build-push-action@v3
+      with:
+        context: ./server
+        file: ./ci/Dockerfile
+        target: dist
+        push: true
+        tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ env.RELEASE_TAG }}
+
+    - name: Deploy to EC2
+      if: ${{ !startsWith(env.GITHUB_REF, 'refs/tags/') }}
+      uses: appleboy/ssh-action@master
+      with:
+        host: 3.38.196.213
+        username: ec2-user
+        key: ${{ secrets.PRIVATE_KEY }}
+        script: |
+          sudo docker rm -f ${{ inputs.repository }}
+          sudo docker run --name ${{ inputs.repository }} -p 80:8080 --env-file ${{ inputs.repository }}.env --pull=always -d ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ env.RELEASE_TAG }}
