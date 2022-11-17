@@ -75,7 +75,7 @@ runs:
       with:
         host: ${{ inputs.host }}
         username: ${{ inputs.username }}
-        key: ${{ secrets.key }}
+        key: ${{ inputs.key }}
         script: |
           sudo docker rm -f ${{ inputs.repository }}
           sudo docker run --name ${{ inputs.repository }} -p 80:8080 --env-file ${{ inputs.repository }}.env --pull=always -d ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ env.RELEASE_TAG }}
