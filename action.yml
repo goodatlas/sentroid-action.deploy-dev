@@ -5,6 +5,18 @@ inputs:
   repository:
     description: "Name of ECR Repository"
     required: true
+  docker-context:
+    description: "Docker context"
+    required: false
+    default: "./server"
+  docker-file:
+    description: "Docker file"
+    required: false
+    default: "./ci/Dockerfile"
+  docker-target:
+    description: "Docker target"
+    required: false
+    default: "dist"
   access-key-id:
     description: "Access Key Id of AWS"
     required: true
@@ -51,9 +63,9 @@ runs:
     - name: Build and push
       uses: docker/build-push-action@v3
       with:
-        context: ./server
-        file: ./ci/Dockerfile
-        target: dist
+        context: ${{ inputs.docker-context }}
+        file: ${{ inputs.docker-file }}
+        target: ${{ inputs.docker-target }}
         push: true
         tags: ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ env.RELEASE_TAG }}
 
