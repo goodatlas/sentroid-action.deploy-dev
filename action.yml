@@ -5,10 +5,10 @@ inputs:
   repository:
     description: "Name of ECR Repository"
     required: true
-  accessKeyId:
+  access-key-id:
     description: "Access Key Id of AWS"
     required: true
-  secretAccessKey:
+  secret-access-key:
     description: "Secret Access Key of AWS"
     required: true
   host:
@@ -40,8 +40,8 @@ runs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ inputs.accessKeyId }}
-        aws-secret-access-key: ${{ inputs.secretAccessKey }}
+        aws-access-key-id: ${{ inputs.access-key-id }}
+        aws-secret-access-key: ${{ inputs.secret-access-key }}
         aws-region: ap-northeast-2
 
     - name: Login to Amazon ECR
