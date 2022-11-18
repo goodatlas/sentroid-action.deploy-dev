@@ -32,6 +32,10 @@ inputs:
   key:
     description: "SSH Private key of Dev EC2"
     required: true
+  run-options:
+    description: "Options for Docker run"
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -78,4 +82,4 @@ runs:
         key: ${{ inputs.key }}
         script: |
           sudo docker rm -f ${{ inputs.repository }}
-          sudo docker run --name ${{ inputs.repository }} -p 80:8080 --env-file ${{ inputs.repository }}.env --pull=always -d ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ env.RELEASE_TAG }}
+          sudo docker run --name ${{ inputs.repository }} ${{ inputs.run-options }} --env-file ${{ inputs.repository }}.env --pull=always -d ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ env.RELEASE_TAG }}
