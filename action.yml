@@ -40,6 +40,10 @@ inputs:
 runs:
   using: "composite"
   steps:
+    - name: Info
+      run: echo repository = ${{ inputs.repository }}, GITHUB_REF = ${{ env.GITHUB_REF }}
+      shell: bash
+
     - name: Checkout
       uses: actions/checkout@v3
 
