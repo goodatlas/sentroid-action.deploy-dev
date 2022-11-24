@@ -45,7 +45,7 @@ runs:
   steps:
     - name: Set environment variables
       run: |
-        echo repository = ${{ inputs.repository }}, github-ref = ${{ inputs.github-ref }}
+        echo repository = ${{ inputs.repository }}, github-ref = ${{ github.ref }}
         echo "GITHUB_REF=${{ inputs.github-ref }}" >> $GITHUB_ENV
       shell: bash
 
