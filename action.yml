@@ -5,6 +5,9 @@ inputs:
   repository:
     description: "Name of ECR Repository"
     required: true
+  github-ref:
+    description: "env.GITHUB_REF"
+    required: true
   docker-context:
     description: "Docker context"
     required: false
@@ -40,8 +43,10 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Info
-      run: echo repository = ${{ inputs.repository }}, GITHUB_REF = ${{ env.GITHUB_REF }}
+    - name: Set environment variables
+      run: |
+        echo repository = ${{ inputs.repository }}, github-ref = ${{ inputs.github-ref }}
+        echo "GITHUB_REF=${{ inputs.github-ref }}" >> $GITHUB_ENV
       shell: bash
 
     - name: Checkout
