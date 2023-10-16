@@ -89,4 +89,4 @@ runs:
         script: |
           sudo docker rm -f ${{ inputs.repository }}
           sudo docker rmi -f ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ env.RELEASE_TAG }}
-          sudo docker run --name ${{ inputs.repository }} ${{ inputs.run-options }} --env-file ${{ inputs.repository }}.env --log-driver local —-log-opt max-size=1m --log-opt max-file=1 --pull=always -d ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ env.RELEASE_TAG }}
+          sudo docker run --name ${{ inputs.repository }} ${{ inputs.run-options }} --env-file ${{ inputs.repository }}.env --log-driver local --pull=always -d ${{ steps.login-ecr.outputs.registry }}/${{ inputs.repository }}:${{ env.RELEASE_TAG }}
